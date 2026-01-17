@@ -121,3 +121,46 @@ Other Solution
 --
 
  */
+
+/*
+Other Solution
+--
+SELECT sq.name
+FROM Square sq
+JOIN Painting p ON sq.id = p.square_id
+WHERE sq.id NOT IN (
+      SELECT DISTINCT square_id
+      FROM Painting
+      WHERE spray_id NOT IN (
+            SELECT spray_id
+            FROM Painting
+            GROUP BY spray_id
+            HAVING SUM(volume) = 255
+      )
+  )
+GROUP BY sq.id, sq.name
+HAVING SUM(p.volume) = 765
+ORDER BY sq.id;
+ */
+
+/*
+Other Solution
+--
+SELECT name
+FROM Square
+INNER JOIN (
+SELECT empty_can.square_id
+FROM (
+	SELECT square_id, volume
+	FROM Painting
+	WHERE spray_id IN (
+		SELECT spray_id
+        FROM Painting
+        GROUP BY spray_id
+        HAVING SUM(volume) = 255)
+		) AS empty_can
+GROUP BY empty_can.square_id
+HAVING SUM(empty_can.volume) = 765) AS white_square
+ON id = white_square.square_id
+ORDER BY name;
+ */
